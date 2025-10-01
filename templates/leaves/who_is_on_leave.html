@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Who's on Leave - Leave Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0" style="color: #495057;"><i class="bi bi-people-fill me-2"></i>Who's on Leave</h1>
+                <span class="badge bg-info fs-6">{{ today|date:"F d, Y" }}</span>
+            </div>
+            
+            <!-- Currently on Leave -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <h5 class="card-title mb-0"><i class="bi bi-check-circle me-2"></i>Currently on Leave</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_leaves %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Department</th>
+                                        <th>Leave Type</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Days</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for leave in current_leaves %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
+                                            <small class="text-muted">{{ leave.user.employee_id|default:"" }}</small>
+                                        </td>
+                                        <td>{{ leave.user.department|default:"N/A" }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ leave.leave_type.name }}</span>
+                                        </td>
+                                        <td>{{ leave.start_date }}</td>
+                                        <td>{{ leave.end_date }}</td>
+                                        <td>{{ leave.days_requested }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No one is currently on leave.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Upcoming Leave -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                    <h5 class="card-title mb-0"><i class="bi bi-calendar-event me-2"></i>Upcoming Leave (Next 7 Days)</h5>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_leaves %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Department</th>
+                                        <th>Leave Type</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Days</th>
+                                        <th>Days Until Start</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for leave in upcoming_leaves %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
+                                            <small class="text-muted">{{ leave.user.employee_id|default:"" }}</small>
+                                        </td>
+                                        <td>{{ leave.user.department|default:"N/A" }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ leave.leave_type.name }}</span>
+                                        </td>
+                                        <td>{{ leave.start_date }}</td>
+                                        <td>{{ leave.end_date }}</td>
+                                        <td>{{ leave.days_requested }}</td>
+                                        <td>
+                                            {% with days_until=leave.start_date|timeuntil %}
+                                            <span class="badge bg-secondary">{{ days_until|slice:":3" }}</span>
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No upcoming leave in the next 7 days.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

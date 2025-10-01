@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Balance - Leave Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h2 mb-4">Leave Balance for {{ current_year }}</h1>
+            
+            <div class="row">
+                {% for balance in leave_balances %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ balance.leave_type.name }}</h5>
+                            <h2 class="text-primary mb-3">{{ balance.available_days }}</h2>
+                            <p class="text-muted">Available Days</p>
+                            
+                            <hr>
+                            
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small class="text-muted">Allocated</small><br>
+                                    <strong>{{ balance.allocated_days }}</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">Used</small><br>
+                                    <strong>{{ balance.used_days }}</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">Pending</small><br>
+                                    <strong>{{ balance.pending_days }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> No leave balances found. Contact your administrator.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+                <a href="{% url 'request_leave' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Request Leave
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

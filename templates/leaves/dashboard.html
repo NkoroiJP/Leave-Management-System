@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Leave Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0" style="color: #495057; font-weight: 600;">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </h1>
+                <span class="badge bg-primary fs-6">{{ user.get_role_display }}</span>
+            </div>
+            
+            <!-- Welcome Message -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card welcome-card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h4 class="card-title mb-2">
+                                        <i class="bi bi-person-circle me-2"></i>
+                                        Welcome, {{ user.get_full_name|default:user.username }}!
+                                    </h4>
+                                    <p class="card-text mb-1">
+                                        <i class="bi bi-briefcase me-1"></i>
+                                        <strong>{{ user.get_role_display }}</strong>
+                                        {% if user.department %}
+                                            <span class="mx-2">|</span>
+                                            <i class="bi bi-building me-1"></i>
+                                            <strong>{{ user.department }}</strong>
+                                        {% endif %}
+                                    </p>
+                                    {% if user.gender %}
+                                    <p class="card-text mb-0">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        {{ user.get_gender_display }} | Employee ID: {{ user.employee_id|default:'Not set' }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    {% if user.is_on_probation %}
+                                    <div class="alert alert-warning mb-0">
+                                        <i class="bi bi-clock-history"></i>
+                                        <strong>Probation Period</strong><br>
+                                        <small>Eligible for leave from: {{ user.get_probation_end_date|date:"M d, Y" }}</small>
+                                    </div>
+                                    {% else %}
+                                    <div class="badge bg-success fs-6 p-2">
+                                        <i class="bi bi-check-circle"></i> Leave Eligible
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leave Balances -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0" style="color: #495057; font-weight: 600;"><i class="bi bi-calendar2-week me-2"></i>Leave Balances</h3>
+                        {% if user.is_on_probation %}
+                        <span class="badge bg-warning"><i class="bi bi-exclamation-triangle"></i> Probation Period</span>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        {% for balance in leave_balances %}
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        {% if balance.leave_type.name == 'Annual Leave' %}
+                                            <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
+                                        {% elif balance.leave_type.name == 'Sick Leave' %}
+                                            <i class="bi bi-heart-pulse text-danger" style="font-size: 2rem;"></i>
+                                        {% elif balance.leave_type.name == 'Study Leave' %}
+                                            <i class="bi bi-book text-info" style="font-size: 2rem;"></i>
+                                        {% elif balance.leave_type.name == 'Paternity Leave' %}
+                                            <i class="bi bi-person-arms-up text-primary" style="font-size: 2rem;"></i>
+                                        {% elif balance.leave_type.name == 'Maternity Leave' %}
+                                            <i class="bi bi-heart text-pink" style="font-size: 2rem; color: #e91e63;"></i>
+                                        {% else %}
+                                            <i class="bi bi-calendar3 text-secondary" style="font-size: 2rem;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <h6 class="card-title text-muted">{{ balance.leave_type.name }}</h6>
+                                    <h2 class="{% if balance.available_days > 0 %}text-success{% elif balance.available_days == 0 and balance.allocated_days > 0 %}text-warning{% else %}text-muted{% endif %} mb-2">
+                                        {{ balance.available_days }}
+                                    </h2>
+                                    <p class="text-muted mb-2">Available Days</p>
+                                    <hr class="my-2">
+                                    <div class="row text-center small">
+                                        <div class="col-4">
+                                            <div class="text-info fw-bold">{{ balance.allocated_days }}</div>
+                                            <div class="text-muted">Allocated</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-danger fw-bold">{{ balance.used_days }}</div>
+                                            <div class="text-muted">Used</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-warning fw-bold">{{ balance.pending_days }}</div>
+                                            <div class="text-muted">Pending</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info border-0 shadow-sm">
+                                <i class="bi bi-info-circle me-2"></i> 
+                                {% if user.is_on_probation %}
+                                    No leave balances during probation period. You'll be eligible for leave from {{ user.get_probation_end_date|date:"F d, Y" }}.
+                                {% else %}
+                                    No leave balances found. Contact your administrator.
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-8">
+                    <!-- Current Leave Status -->
+                    {% if current_leaves %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0"><i class="bi bi-check-circle"></i> Currently on Leave</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for leave in current_leaves %}
+                            <div class="alert alert-success">
+                                <strong>{{ leave.leave_type.name }}</strong><br>
+                                {{ leave.start_date }} to {{ leave.end_date }}<br>
+                                <small>{{ leave.reason }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Upcoming Leaves -->
+                    {% if upcoming_leaves %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="bi bi-calendar-event"></i> Upcoming Leaves</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for leave in upcoming_leaves %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>{{ leave.leave_type.name }}</strong><br>
+                                    <small class="text-muted">{{ leave.start_date }} to {{ leave.end_date }}</small>
+                                </div>
+                                <span class="badge bg-primary">{{ leave.days_requested }} days</span>
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Pending Requests -->
+                    {% if pending_requests %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="bi bi-clock"></i> Pending Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for request in pending_requests %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>{{ request.leave_type.name }}</strong><br>
+                                    <small class="text-muted">{{ request.start_date }} to {{ request.end_date }}</small><br>
+                                    <span class="badge bg-warning text-dark">{{ request.get_status_display }}</span>
+                                </div>
+                                <div>
+                                    <span class="badge bg-secondary">{{ request.days_requested }} days</span><br>
+                                    <a href="{% url 'leave_request_detail' request.pk %}" class="btn btn-sm btn-outline-primary mt-1">View</a>
+                                </div>
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                            
+                            <div class="text-center mt-3">
+                                <a href="{% url 'leave_request_list' %}" class="btn btn-sm btn-primary">View All Requests</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-md-4">
+                    <!-- Quick Actions -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'request_leave' %}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Request Leave
+                                </a>
+                                <a href="{% url 'leave_balance' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-bar-chart"></i> View Leave Balance
+                                </a>
+                                <a href="{% url 'who_is_on_leave' %}" class="btn btn-outline-info">
+                                    <i class="bi bi-people"></i> Who's on Leave
+                                </a>
+                                {% if user.role == 'HOD' or user.role == 'MANAGEMENT' %}
+                                <a href="{% url 'approval_dashboard' %}" class="btn btn-outline-success">
+                                    <i class="bi bi-check-circle"></i> Approvals
+                                    {% if pending_approvals %}
+                                    <span class="badge bg-danger">{{ pending_approvals.count }}</span>
+                                    {% endif %}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Who's on Leave Today -->
+                    {% if users_on_leave %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="bi bi-people"></i> Currently on Leave</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for leave in users_on_leave %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
+                                    <small class="text-muted">{{ leave.leave_type.name }}</small>
+                                </div>
+                                <small class="text-muted">{{ leave.end_date }}</small>
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                            {% endfor %}
+                            
+                            {% if users_on_leave.count > 3 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'who_is_on_leave' %}" class="btn btn-sm btn-outline-info">View All</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Approval Requests (for HODs and Management) -->
+                    {% if pending_approvals %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning">
+                            <h5 class="card-title mb-0"><i class="bi bi-exclamation-triangle"></i> Pending Approvals</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">You have <strong>{{ pending_approvals.count }}</strong> leave request(s) waiting for approval.</p>
+                            <a href="{% url 'approval_dashboard' %}" class="btn btn-warning">Review Requests</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

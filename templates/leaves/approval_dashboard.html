@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Approval Dashboard - Leave Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h2 mb-4">Approval Dashboard</h1>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Pending Approvals</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_requests %}
+                        {% for request in pending_requests %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h6>{{ request.user.get_full_name|default:request.user.username }}</h6>
+                                        <p class="mb-1"><strong>{{ request.leave_type.name }}</strong></p>
+                                        <p class="mb-1">{{ request.start_date }} to {{ request.end_date }} ({{ request.days_requested }} days)</p>
+                                        <p class="text-muted mb-2">{{ request.reason }}</p>
+                                        <span class="badge bg-warning">{{ request.get_status_display }}</span>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <form method="post" style="display: inline;" action="{% url 'approve_leave' request.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="comments" value="">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="bi bi-check-circle"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form method="post" style="display: inline;" action="{% url 'reject_leave' request.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="rejection_reason" value="Not approved">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-x-circle"></i> Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No pending approvals.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Request Details - Leave Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Leave Request Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Employee:</strong> {{ leave_request.user.get_full_name|default:leave_request.user.username }}<br>
+                            <strong>Leave Type:</strong> {{ leave_request.leave_type.name }}<br>
+                            <strong>Start Date:</strong> {{ leave_request.start_date }}<br>
+                            <strong>End Date:</strong> {{ leave_request.end_date }}<br>
+                            <strong>Days Requested:</strong> {{ leave_request.days_requested }}<br>
+                            <strong>Status:</strong> 
+                            <span class="badge bg-{% if leave_request.status == 'APPROVED' %}success{% elif leave_request.status == 'REJECTED' %}danger{% elif leave_request.status == 'RECALLED' %}warning{% else %}secondary{% endif %}">
+                                {{ leave_request.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Created:</strong> {{ leave_request.created_at }}<br>
+                            <strong>Last Updated:</strong> {{ leave_request.updated_at }}<br>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Reason:</h6>
+                    <p>{{ leave_request.reason }}</p>
+                    
+                    {% if leave_request.hod_comments or leave_request.management_comments or leave_request.rejection_reason %}
+                    <hr>
+                    <h6>Comments:</h6>
+                    
+                    {% if leave_request.hod_comments %}
+                        <div class="alert alert-info">
+                            <strong>HOD Comments:</strong> {{ leave_request.hod_comments }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if leave_request.management_comments %}
+                        <div class="alert alert-success">
+                            <strong>Management Comments:</strong> {{ leave_request.management_comments }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if leave_request.rejection_reason %}
+                        <div class="alert alert-danger">
+                            <strong>Rejection Reason:</strong> {{ leave_request.rejection_reason }}
+                        </div>
+                    {% endif %}
+                    {% endif %}
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'leave_request_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
