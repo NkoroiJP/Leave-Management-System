@@ -26,26 +26,45 @@
                                         <th>Department</th>
                                         <th>Leave Type</th>
                                         <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Days</th>
-                                    </tr>
+                                                                                <th>End Date</th>
+                                                                                <th>Days</th>
+                                                                                <th>Action</th>
+                                                                            </tr>
                                 </thead>
                                 <tbody>
                                     {% for leave in current_leaves %}
-                                    <tr>
-                                        <td>
-                                            <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
-                                            <small class="text-muted">{{ leave.user.employee_id|default:"" }}</small>
-                                        </td>
-                                        <td>{{ leave.user.department|default:"N/A" }}</td>
-                                        <td>
-                                            <span class="badge bg-info">{{ leave.leave_type.name }}</span>
-                                        </td>
-                                        <td>{{ leave.start_date }}</td>
-                                        <td>{{ leave.end_date }}</td>
-                                        <td>{{ leave.days_requested }}</td>
-                                    </tr>
-                                    {% endfor %}
+                                                                        <tr>
+                                                                            <td>
+                                                                                <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
+                                                                                <small class="text-muted">{{ leave.user.employee_id|default:"" }}</small>
+                                                                            </td>
+                                                                            <td>{{ leave.user.department|default:"N/A" }}</td>
+                                                                            <td>
+                                                                                <span class="badge bg-info">{{ leave.leave_type.name }}</span>
+                                                                            </td>
+                                                                            <td>{{ leave.start_date }}</td>
+                                                                            <td>{{ leave.end_date }}</td>
+                                                                            <td>{{ leave.days_requested }}</td>
+                                                                            <td>
+                                                                                {% if user.role == 'MANAGEMENT' %}
+                                                                                    {% if leave.can_be_recalled %}
+                                                                                        <form method="post" action="{% url 'recall_leave' leave.id %}" style="display: inline;">
+                                                                                            {% csrf_token %}
+                                                                                            <button type="submit" class="btn btn-warning btn-sm"
+                                                                                                    title="Recall employee from leave"
+                                                                                                    onclick="return confirm('Are you sure you want to recall {{ leave.user.get_full_name|default:leave.user.username }} from leave? The remaining days will be restored to their balance.')">
+                                                                                                <i class="bi bi-arrow-repeat"></i> Recall
+                                                                                            </button>
+                                                                                        </form>
+                                                                                    {% else %}
+                                                                                        <span class="text-muted">N/A</span>
+                                                                                    {% endif %}
+                                                                                {% else %}
+                                                                                    <span class="text-muted">N/A</span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endfor %}
                                 </tbody>
                             </table>
                         </div>

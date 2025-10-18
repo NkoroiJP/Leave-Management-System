@@ -127,19 +127,83 @@
             100% { transform: rotate(360deg); }
         }
         /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a1a1a1;
-        }
+                ::-webkit-scrollbar {
+                    width: 8px;
+                }
+                ::-webkit-scrollbar-track {
+                    background: #f1f1;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background: #c1c1c1;
+                    border-radius: 4px;
+                }
+                ::-webkit-scrollbar-thumb:hover {
+                    background: #a1a1a1;
+                }
+                /* Enhanced button styling */
+                .btn {
+                    border-radius: 8px;
+                    font-weight: 500;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .btn:hover {
+                    box-shadow: 0 4px 8px rgba(0,0,0.15);
+                }
+                .btn-warning {
+                    background-color: #ffc107;
+                    border-color: #ffc107;
+                    color: #212529;
+                }
+                .btn-warning:hover {
+                    background-color: #e0a800;
+                    border-color: #d39e00;
+                }
+                /* Enhanced table styling */
+                .table {
+                    border-collapse: separate;
+                    border-spacing: 0;
+                }
+                .table th {
+                    border-top: none;
+                    border-bottom: 2px solid #dee2e6;
+                    font-weight: 600;
+                }
+                .table tr {
+                    transition: background-color 0.2s ease;
+                }
+                .table tr:hover {
+                    background-color: #f8f9fa;
+                }
+                .table td {
+                    vertical-align: middle;
+                }
+                /* Enhanced card styling */
+                .card {
+                    border-radius: 12px;
+                    overflow: hidden;
+                }
+                .card-header {
+                    border-radius: 0 !important;
+                    font-weight: 600;
+                }
+                /* Status badge enhancements */
+                .badge {
+                    border-radius: 20px;
+                    padding: 0.5em 0.8em;
+                }
+                /* Alert enhancements */
+                .alert {
+                    border-radius: 8px;
+                }
+                /* Form enhancements */
+                .form-control {
+                    border-radius: 8px;
+                    border: 1px solid #ced4da;
+                }
+                .form-control:focus {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
     </style>
 </head>
 <body>

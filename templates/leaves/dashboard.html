@@ -139,10 +139,26 @@
                         <div class="card-body">
                             {% for leave in current_leaves %}
                             <div class="alert alert-success">
-                                <strong>{{ leave.leave_type.name }}</strong><br>
-                                {{ leave.start_date }} to {{ leave.end_date }}<br>
-                                <small>{{ leave.reason }}</small>
-                            </div>
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>{{ leave.leave_type.name }}</strong><br>
+                                                                    {{ leave.start_date }} to {{ leave.end_date }}<br>
+                                                                    <small>{{ leave.reason }}</small>
+                                                                </div>
+                                                                {% if user.role == 'MANAGEMENT' and leave.user != user %}
+                                                                                                                                    {% if leave.can_be_recalled %}
+                                                                                                                                        <form method="post" action="{% url 'recall_leave' leave.id %}" style="display: inline;">
+                                                                                                                                            {% csrf_token %}
+                                                                                                                                            <button type="submit" class="btn btn-warning btn-sm"
+                                                                                                                                                    title="Recall employee from leave"
+                                                                                                                                                    onclick="return confirm('Are you sure you want to recall {{ leave.user.get_full_name|default:leave.user.username }} from leave? The remaining days will be restored to their balance.')">
+                                                                                                                                                <i class="bi bi-arrow-repeat"></i> Recall
+                                                                                                                                            </button>
+                                                                                                                                        </form>
+                                                                                                                                    {% endif %}
+                                                                                                                                {% endif %}
+                                                            </div>
+                                                        </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -238,12 +254,26 @@
                         <div class="card-body">
                             {% for leave in users_on_leave %}
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
-                                    <small class="text-muted">{{ leave.leave_type.name }}</small>
-                                </div>
-                                <small class="text-muted">{{ leave.end_date }}</small>
-                            </div>
+                                                            <div>
+                                                                <strong>{{ leave.user.get_full_name|default:leave.user.username }}</strong><br>
+                                                                <small class="text-muted">{{ leave.leave_type.name }}</small>
+                                                            </div>
+                                                            <div class="d-flex align-items-center">
+                                                                <small class="text-muted me-2">{{ leave.end_date }}</small>
+                                                                {% if user.role == 'MANAGEMENT' %}
+                                                                    {% if leave.can_be_recalled %}
+                                                                        <form method="post" action="{% url 'recall_leave' leave.id %}" style="display: inline;">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn btn-warning btn-sm"
+                                                                                    title="Recall employee from leave"
+                                                                                    onclick="return confirm('Are you sure you want to recall {{ leave.user.get_full_name|default:leave.user.username }} from leave? The remaining days will be restored to their balance.')">
+                                                                                <i class="bi bi-arrow-repeat"></i> Recall
+                                                                            </button>
+                                                                        </form>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
                             {% if not forloop.last %}<hr>{% endif %}
                             {% endfor %}
                             

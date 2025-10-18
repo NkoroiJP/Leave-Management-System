@@ -58,10 +58,20 @@
                     {% endif %}
                     
                     <div class="text-center mt-4">
-                        <a href="{% url 'leave_request_list' %}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                    </div>
+                                            {% if user.role == 'MANAGEMENT' and leave_request.status == 'APPROVED' and leave_request.can_be_recalled %}
+                                                <form method="post" action="{% url 'recall_leave' leave_request.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-warning me-2"
+                                                            title="Recall employee from leave"
+                                                            onclick="return confirm('Are you sure you want to recall {{ leave_request.user.get_full_name|default:leave_request.user.username }} from leave? The remaining days will be restored to their balance.')">
+                                                        <i class="bi bi-arrow-repeat"></i> Recall Leave
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            <a href="{% url 'leave_request_list' %}" class="btn btn-secondary">
+                                                <i class="bi bi-arrow-left"></i> Back to List
+                                            </a>
+                                        </div>
                 </div>
             </div>
         </div>
