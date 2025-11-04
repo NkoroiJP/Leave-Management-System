@@ -34,7 +34,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 # Add ngrok domains
 ngrok_domains = [
     '*.ngrok-free.app',
-    '0dbb1e532985.ngrok-free.app',
+    'b5cbc175b903.ngrok-free.app',
 ]
 ALLOWED_HOSTS.extend(ngrok_domains)
 
@@ -48,7 +48,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://*.ngrok-free.app',
-    'https://0dbb1e532985.ngrok-free.app',
+    'https://b5cbc175b903.ngrok-free.app',
 ]
 
 # Add custom CSRF origins from environment

@@ -246,4 +246,3 @@ python manage.py collectstatic
 ## License
 
 This project is created as a demonstration of Django leave management system capabilities.
-# Leave-Management-System
